@@ -35,3 +35,27 @@ class DownloadWeeklyReportView(View):
                 formatted_data[model] = {version: 1}
         return formatted_data
 
+    @staticmethod
+    def get_excel_file(data: dict, filename=None):
+        if filename is None:
+            filename = 'weekly_production_report ' + str(datetime.date.today()) + '.xlsx'
+        report = Workbook()
+        report.remove(report.active)
+        headers = ["Модель", "Версия", "Количество за неделю"]
+        if len(data) == 0:
+            report.create_sheet("Нет данных за прошедшую неделю")
+            report.active = report["Нет данных за прошедшую неделю"]
+            worksheet = report.active
+            worksheet.append(headers)
+        else:
+            for model, version in data.items():
+                report.create_sheet(model)
+                report.active = report[model]
+                worksheet = report.active
+                worksheet.append(headers)
+                for version_name, quantity in version.items():
+                    row = [model, version_name, quantity]
+                    worksheet.append(row)
+        report.save(filename)
+        return report
+

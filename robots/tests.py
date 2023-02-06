@@ -75,3 +75,24 @@ class TestWeeklyReport(TestCase):
         self.assertEqual(formatted_data['R2']['D2'], 2)
         self.assertEqual(formatted_data['R2']['C3'], 1)
         self.assertEqual(formatted_data['C3']['D2'], 1)
+
+    def test_file_created(self):
+        queryset = DownloadWeeklyReportView.get_last_week_production()
+        formatted_data = DownloadWeeklyReportView.format_queryset_data(queryset)
+        file = DownloadWeeklyReportView.get_excel_file(formatted_data)
+        self.assertEqual(type(file), Workbook)
+        file.active = file['R2']
+        sheet_r2 = file.active
+        self.assertEqual(sheet_r2['a2'].value, 'R2')
+        self.assertEqual(sheet_r2['b2'].value, 'D2')
+        self.assertEqual(sheet_r2['c2'].value, 2)
+        file.active = file['C3']
+        sheet_c3 = file.active
+        self.assertEqual(sheet_c3['a2'].value, 'C3')
+        self.assertEqual(sheet_c3['b2'].value, 'D2')
+        self.assertEqual(sheet_c3['c2'].value, 1)
+
+    def test_file_created_no_data(self):
+        data = dict()
+        file = DownloadWeeklyReportView.get_excel_file(data)
+        self.assertEqual(type(file), Workbook)
