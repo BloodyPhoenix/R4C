@@ -19,3 +19,19 @@ class DownloadWeeklyReportView(View):
         queryset = Robot.objects.filter(created__gte=week_ago)
         return queryset
 
+    @staticmethod
+    def format_queryset_data(queryset):
+        # Сортируем и преобразовываем данные по произведённым роботам для дальнейшей записи в файл
+        formatted_data = dict()
+        for robot in queryset:
+            model = robot.model
+            version = robot.version
+            if model in formatted_data:
+                if version in formatted_data[model]:
+                    formatted_data[model][version] += 1
+                else:
+                    formatted_data[model][version] = 1
+            else:
+                formatted_data[model] = {version: 1}
+        return formatted_data
+

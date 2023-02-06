@@ -68,3 +68,10 @@ class TestWeeklyReport(TestCase):
         queryset = DownloadWeeklyReportView.get_last_week_production()
         self.assertNotIn(robot_1, queryset)
         self.assertIn(robot_2, queryset)
+
+    def test_correct_data_format(self):
+        queryset = DownloadWeeklyReportView.get_last_week_production()
+        formatted_data = DownloadWeeklyReportView.format_queryset_data(queryset)
+        self.assertEqual(formatted_data['R2']['D2'], 2)
+        self.assertEqual(formatted_data['R2']['C3'], 1)
+        self.assertEqual(formatted_data['C3']['D2'], 1)
