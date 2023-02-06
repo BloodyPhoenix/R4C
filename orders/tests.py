@@ -19,4 +19,14 @@ class TestOrdersApi(TestCase):
         registered_functions = [r[1]() for r in signals.post_save.receivers]
         self.assertIn(send_email, registered_functions)
 
+    def test_email_sent(self):
+        robot_data = {'serial': 'R2-D2', 'model': "R2", 'version': 'D2', 'created': '2022-12-31 23:59:59'}
+        Robot.objects.create(**robot_data)
+        self.assertEqual(len(mail.outbox), 1)
+
+    def test_email_not_sent(self):
+        robot_data = {'serial': 'R3-D2', 'model': "R3", 'version': 'D2', 'created': '2022-12-31 23:59:59'}
+        Robot.objects.create(**robot_data)
+        self.assertEqual(len(mail.outbox), 0)
+
 
