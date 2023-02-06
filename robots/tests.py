@@ -96,3 +96,11 @@ class TestWeeklyReport(TestCase):
         data = dict()
         file = DownloadWeeklyReportView.get_excel_file(data)
         self.assertEqual(type(file), Workbook)
+
+    def test_file_download(self):
+        response = self.client.get('/robots_api/get_weekly_report')
+        filename = 'weekly_production_report ' + str(datetime.date.today()) + '.xlsx'
+        self.assertEquals(
+            response.get('Content-Disposition'),
+            f"attachment; filename={filename}"
+        )

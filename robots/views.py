@@ -36,7 +36,10 @@ class DownloadWeeklyReportView(View):
         return formatted_data
 
     @staticmethod
-    def get_excel_file(data: dict, filename=None):
+    def get_excel_file(data: dict, filename=None, response=None):
+        # Я оставила генерацию объекта Workbook для упрощения тестирования.
+        # Если мы не передаём response, то с помощью юниттестов можем проверить корректность заполнения файла.
+        # Аргумент filename оставлен как опциональный также для упрощения тестирования
         if filename is None:
             filename = 'weekly_production_report ' + str(datetime.date.today()) + '.xlsx'
         report = Workbook()
@@ -56,6 +59,19 @@ class DownloadWeeklyReportView(View):
                 for version_name, quantity in version.items():
                     row = [model, version_name, quantity]
                     worksheet.append(row)
-        report.save(filename)
+        if response:
+            report.save(response)
+            return response
+        else:
+            report.save(filename)
+            return report
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_last_week_production()
+        formatted_data = self.format_queryset_data(queryset)
+        filename = 'weekly_production_report ' + str(datetime.date.today()) + '.xlsx'
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename={filename}'
+        report = self.get_excel_file(formatted_data, filename, response)
         return report
 
