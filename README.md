@@ -9,4 +9,4 @@ First API is designed to deserialize json file into django model format. Made vi
 Second API is designed to generate .xlsx file, which user can download via link. Made via openpyxl library + standart Django tools. Realized in views.py file of robots app.
 
 ## Third API - email sending
-Third api is designed to send email to customers when the goods they wanted are produced. Realized via standart Django tools in oerders/siganls.py file. 
+Third api is designed to send email to customers when the goods they wanted are produced. Realized via standart Django tools in orders/siganls.py file. 
