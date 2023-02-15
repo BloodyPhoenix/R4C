@@ -9,9 +9,7 @@ class DownloadWeeklyReportView(View):
 
     @staticmethod
     def get_last_week_production():
-        # Немного шаманства, чтобы считались все данные за день неделю назад, а не только те, что были получены
-        # строго за последние 168 часов
-        # Не знаю, нужно ли исключать текущий день. В этой версии кода он не исключается из выдачи
+        # We are counting all the data from the day seven days ago, not just last 168 hours
         today_date = datetime.date.today()
         time = datetime.datetime.strptime('00:00:00', '%H:%M:%S').time()
         today_full_date = datetime.datetime.combine(today_date, time)
@@ -21,7 +19,7 @@ class DownloadWeeklyReportView(View):
 
     @staticmethod
     def format_queryset_data(queryset):
-        # Сортируем и преобразовываем данные по произведённым роботам для дальнейшей записи в файл
+        # Sorting and converting queryset data before adding it into file
         formatted_data = dict()
         for robot in queryset:
             model = robot.model
@@ -37,9 +35,9 @@ class DownloadWeeklyReportView(View):
 
     @staticmethod
     def get_excel_file(data: dict, filename=None, response=None):
-        # Я оставила генерацию объекта Workbook для упрощения тестирования.
-        # Если мы не передаём response, то с помощью юниттестов можем проверить корректность заполнения файла.
-        # Аргумент filename оставлен как опциональный также для упрощения тестирования
+        # I left Workbook object generation for simplifying testing.
+        # If we are not returning Response object we can check correct data in file via unittests.
+        # filename argument os also left to simplify testing
         if filename is None:
             filename = 'weekly_production_report ' + str(datetime.date.today()) + '.xlsx'
         report = Workbook()

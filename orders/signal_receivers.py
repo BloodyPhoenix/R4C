@@ -5,17 +5,19 @@ from .models import Order
 from robots.models import Robot
 from smtplib import SMTPException
 
+PROMOTION_MESSAGE = '''
+    Добрый день!
+    Недавно вы интересовались нашим роботом модели {model}, версии {version}. 
+    Этот робот теперь в наличии. Если вам подходит этот вариант - пожалуйста, свяжитесь с нами
+    '''
+
 
 def send_email(sender, instance, created, **kwargs):
     serial = instance.serial
     orders = Order.objects.select_related('customer').only('customer__email').filter(robot_serial=serial)
     model = instance.model
     version = instance.version
-    text = f'''
-    Добрый день!
-    Недавно вы интересовались нашим роботом модели {model}, версии {version}. 
-    Этот робот теперь в наличии. Если вам подходит этот вариант - пожалуйста, свяжитесь с нами
-    '''
+    text = PROMOTION_MESSAGE.format(model=model, version=version)
     for order in orders:
         try:
             send_mail(
@@ -24,12 +26,13 @@ def send_email(sender, instance, created, **kwargs):
                 from_email='robot_company@robots.com',
                 recipient_list=[order.customer.email])
             try:
+                # If we need to keep orders history, change this code and do something else to avoid duplicate emails
                 order.delete()
             except Error as exception:
-                # Высылаем сообщение, если по какой-то причине емейл ушёл, а заказ так и висит в базе
+                # Logging or sending message if email was sent, but there was no operation with order entity
                 pass
         except SMTPException as exception:
-            # Тут мы логируем ошибку отправки, если она возникла
+            # Logging or sending email seding error
             pass
 
 

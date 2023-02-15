@@ -16,7 +16,9 @@ class CreateRobotAPI(ModelViewSet):
             'version': request.data.get('version'),
             'created': request.data.get('created')
         }
-        data['serial'] = data['model']+'-'+data['version']
+        model = data['model']
+        version = data['version']
+        data['serial'] = f'{model}-{version}'
         serializer = self.get_serializer(data=data)
         if serializer.is_valid():
             serializer.save()

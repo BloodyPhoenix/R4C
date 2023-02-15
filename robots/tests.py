@@ -45,8 +45,8 @@ class TestWeeklyReport(TestCase):
 
     @classmethod
     def setUpTestData(cls):
-        # Что мы ожидаем с этим набором тестовых данных:
-        # В отчёте 2 робота R2-D2, один R2-C3 и один C3-D2, R2-C5 не попадает вообще
+        # What we are expecting with this data:
+        # 2 robots R2-D2 in report, one R2-C3 and one C3-D2, no R2-C5 entirely
         time_data = [
             datetime.datetime.now(),
             datetime.datetime.now(),
